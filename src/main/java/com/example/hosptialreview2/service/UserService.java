@@ -7,12 +7,14 @@ import com.example.hosptialreview2.exception.ErrorCode;
 import com.example.hosptialreview2.exception.HospitalReviewAppException;
 import com.example.hosptialreview2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
 
     public UserDto join(UserJoinRequest request){
         // 비즈니스 로직: 회원가입
@@ -33,7 +35,7 @@ public class UserService {
 
         // 회원가입 .save()
         // userJoinReqest로 받았으르모 entity 로 받아줘야함
-        User savedUser = userRepository.save(request.toEntity());
+        User savedUser = userRepository.save(request.toEntity(encoder.encode(request.getPassword())));
         return UserDto.builder()
                 .id(savedUser.getId())
                 .userName(savedUser.getUsername())
